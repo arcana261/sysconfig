@@ -43,6 +43,7 @@ function changelog() {
 
 alias tmux-new-session="TERM=xterm-256color tmux -2 -f $HOME/Documents/notes/sysconfig/tmux.conf"
 alias tmux-attach="TERM=xterm-256color tmux -2 attach"
+alias tmux-detach="TERM=xterm-256color tmux detach"
 
 alias trim="tr -s [:blank:] | tr -s [:space:]"
 alias bsv2tsv="trim | tr [:blank:] '\t'"
