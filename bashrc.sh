@@ -260,17 +260,26 @@ function npm() {
 }
 
 function _regit() {
+  if [ "$WSL_DISTRO_NAME" == "" ]; then
     ISGIT=$(git status 1>/dev/null 2>&1 || echo "NOGIT")
     if [ "$ISGIT" != "NOGIT" ]; then
         tmux set -g status-right '#[fg=red](git: '$(git rev-parse --abbrev-ref HEAD)') #[fg=yellow]'$(pwd)' #[fg=Cyan]#S #[fg=white]%a %d %b %R'
     else
         tmux set -g status-right '#[fg=yellow]'$(pwd)' #[fg=Cyan]#S #[fg=white]%a %d %b %R'
     fi
-		DIR_NAME=$(pwd | sed 's|[^/]*/||g')
-		if [ "$PS_PREFIX" != "" ]; then
-			DIR_NAME="($PS_PREFIX:$DIR_NAME)"
-		fi
+    DIR_NAME=$(pwd | sed 's|[^/]*/||g')
+    if [ "$PS_PREFIX" != "" ]; then
+      DIR_NAME="($PS_PREFIX:$DIR_NAME)"
+    fi
     export PS1=$(echo $PS1 | sed $'s|\u25A0.*$||g')$'\u25A0'" \[${DIR_COLOR}\]"$DIR_NAME"\[${SECOND_ARROW_COLOR}\]"$'\u2771'"\[${TEXT_COLOR}\] "
+  else
+    tmux set -g status-right '#[fg=yellow]'$(pwd)' #[fg=Cyan]#S #[fg=white]%a %d %b %R'
+    DIR_NAME=$(pwd | sed 's|[^/]*/||g')
+    if [ "$PS_PREFIX" != "" ]; then
+      DIR_NAME="($PS_PREFIX:$DIR_NAME)"
+    fi
+    export PS1=$(echo $PS1 | sed $'s|\u25A0.*$||g')$'\u25A0'" \[${DIR_COLOR}\]"$DIR_NAME"\[${SECOND_ARROW_COLOR}\]"$'\u2771'"\[${TEXT_COLOR}\] "
+  fi
 }
 
 function qind() {
@@ -302,14 +311,20 @@ function nvv() {
     __vim
 }
 
-function pyvv() {
+function __npyvv() {
   venv
   nvv
 }
-function npyvv() {
+function __pyvv() {
   venv
-  nvv
+  vv
 }
+
+if [ "$WSL_DISTRO_NAME" == "" ]; then
+  alias pyvv="__npyvv"
+else
+  alias pyvv="__pyvv"
+fi
 
 function venv() {
   if [ ! -f .venv/bin/activate ]; then
@@ -517,11 +532,14 @@ function __gvim() {
     $DOCKER exec -it $running_container_id bash -c 'cd '"$PWD"' && export DISPLAY="'"$DISPLAY"'" && /usr/bin/gvim '"$@"
   fi
 }
-alias nvim="__vim"
-alias ovim="$(which vim)"
-alias vim="__vim"
-alias gvim="__gvim"
-alias ogvim="$(which gvim)"
+
+if [ "$(which docker)" != "" ]; then
+	alias nvim="__vim"
+	alias ovim="$(which vim)"
+	alias vim="__vim"
+	alias gvim="__gvim"
+	alias ogvim="$(which gvim)"
+fi
 
 function rfirefox() {
   if [ ! -d /sys/fs/cgroup/memory/firefox ]; then
@@ -967,7 +985,7 @@ function linux() {
 }
 
 function start_virtual_vnc_server() {
-  x11vnc -create -listen 0.0.0.0 -env PATH=$PATH -env FD_PROG=/usr/bin/fluxbox -env X11VNC_FINDDISPLAY_ALWAYS_FAILS=1 -env X11VNC_CREATE_GEOM=${1:-1920x1080x16} -gone 'killall Xvfb' -bg -nopw
+  x11vnc -create -listen 0.0.0.0 -env PATH="$PATH" -env FD_PROG=/usr/bin/fluxbox -env X11VNC_FINDDISPLAY_ALWAYS_FAILS=1 -env X11VNC_CREATE_GEOM=${1:-1920x1080x16} -gone 'killall Xvfb' -bg -nopw
 }
 
 function x-key-swap-caps() {
@@ -1028,7 +1046,7 @@ export MAVEN_VERSION=3.6.3
 export JDK_VERSION=jdk8
 export GLASSFISH_VERSION=5.0.1
 
-function gradle() {
+function __gradle() {
   volume_name="gradle_$(echo $GRADLE_VERSION | tr '.' '_')__$JDK_VERSION"
 
   if [ "$(docker volume ls | awk '{print $2}' | grep $volume_name)" == "" ]; then
@@ -1056,6 +1074,10 @@ function gradle() {
     gradle:${GRADLE_VERSION}-${JDK_VERSION} \
     $@
 }
+
+if [ "$(which docker)" != "" ]; then
+	alias gradle="__gradle"
+fi
 
 function x-java-init-maven-glassfish() {
   group_id=""
@@ -1101,7 +1123,7 @@ function x-java-init-maven-glassfish() {
 
 }
 
-function mvn() {
+function __mvn() {
   DOCKER="docker"
   if [ "$(groups | grep docker)" == "" ]; then
     DOCKER="sudo docker"
@@ -1151,6 +1173,9 @@ function mvn() {
     maven:${MAVEN_VERSION}-${jdk_name} \
     $@
 }
+if [ "$(which docker)" != "" ]; then
+	alias mvn="__mvn"
+fi
 
 function __glassfish() {
   DOCKER="docker"
