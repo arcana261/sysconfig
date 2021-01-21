@@ -984,7 +984,7 @@ function linux() {
   fi
 }
 
-function start_virtual_vnc_server() {
+function x-start-virtual-vnc-server() {
   x11vnc -create -listen 0.0.0.0 -env PATH="$PATH" -env FD_PROG=/usr/bin/fluxbox -env X11VNC_FINDDISPLAY_ALWAYS_FAILS=1 -env X11VNC_CREATE_GEOM=${1:-1920x1080x16} -gone 'killall Xvfb' -bg -nopw
 }
 
@@ -1001,6 +1001,43 @@ function x-key-swap-caps() {
 
 function x-start-ibus() {
   ibus-daemon --xim&
+}
+
+function x-start-dbus() {
+if [ -f /run/dbus/pid ]; then
+  pid=$(cat /run/dbus/pid)
+  if [ "$(ps aux | awk '{if ($2=="'"$pid"'"){print $2}}')" == "" ]; then
+    echo -n ">> Starting system dbus..."
+    sudo rm -f /run/dbus/pid
+    sudo mkdir -p /var/run/dbus
+    sudo /usr/bin/dbus-daemon --system --address=unix:path=/var/run/dbus/system_bus_socket --fork --systemd-activation --print-pid 1> /dev/null
+    echo " done"
+  fi
+else
+  echo -n ">> Starting system dbus..."
+  sudo mkdir -p /var/run/dbus
+  sudo /usr/bin/dbus-daemon --system --address=unix:path=/var/run/dbus/system_bus_socket --fork --systemd-activation --print-pid 1> /dev/null
+  echo " done"
+fi
+
+if [ -f $HOME/.cache/dbus.pid ]; then
+  pid=$(cat $HOME/.cache/dbus.pid)
+  if [ "$(ps aux | awk '{if ($2=="'"$pid"'"){print $2}}')" == "" ]; then
+    echo -n ">> Starting session dbus..."
+    pid=$(/usr/bin/dbus-daemon --session --address=unix:tmpdir=/tmp --fork --systemd-activation --print-pid)
+    echo "$pid" > $HOME/.cache/dbus.pid
+    echo " done"
+  fi
+else
+  echo -n ">> Starting session dbus..."
+  pid=$(/usr/bin/dbus-daemon --session --address=unix:tmpdir=/tmp --fork --systemd-activation --print-pid)
+  sudo mkdir -p $HOME/.cache
+  sudo chown -R $(id -u):$(id -g) $HOME/.cache
+  echo "$pid" > $HOME/.cache/dbus.pid
+  echo " done"
+fi
+export DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$(id -u)/bus"
+
 }
 
 function x-suspend() {
