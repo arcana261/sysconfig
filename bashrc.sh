@@ -159,7 +159,9 @@ function gcoff() {
 }
 alias gcob="git checkout -b "
 alias gcom="git checkout master "
+alias gcomm="git checkout main "
 alias gcomgp="gcom && gp"
+alias gcommgp="gcomm && gp"
 alias ga="git add "
 function gaf() {
   file=$(git ls-files --modified --others --exclude-standard --directory | fzf --preview='git diff {}' --bind "ctrl-a:execute(git add {1})+reload(git ls-files --modified --others --exclude-standard --directory)" --header 'Press CTRL-A to Git ADD')
@@ -1064,6 +1066,7 @@ function x-screen-external() {
   $HOME/.screenlayout/external-only.sh
 }
 alias x-audio="pavucontrol"
+alias x-battery="acpi"
 
 tmux select-pane -P 'bg=black,fg=colour15'
 
