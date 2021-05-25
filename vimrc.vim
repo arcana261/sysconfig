@@ -24,6 +24,16 @@ cnoremap kj <C-C>
 cnoremap jk <C-C>
 color OceanicNext
 
+
+call plug#begin('~/.vim/plugged')
+Plug 'pangloss/vim-javascript'
+Plug 'leafgarland/typescript-vim'
+Plug 'peitalin/vim-jsx-typescript'
+Plug 'styled-components/vim-styled-components', { 'branch': 'main' }
+Plug 'jparise/vim-graphql'
+call plug#end()
+
+
 "ts = 'number of spaces that <Tab> in file uses' sts = 'number of spaces that <Tab> uses while editing' sw = 'number of spaces to use for (auto)indent step'
 "autocmd Filetype python setlocal ts=4 sw=4 sts=0 noexpandtab
 autocmd Filetype python setlocal ts=4 sw=4 sts=4 expandtab
@@ -44,10 +54,31 @@ autocmd BufEnter,BufNew *.conf setlocal ft=conf
 autocmd BufEnter,BufNew *.bashrc setlocal ft=sh
 autocmd BufEnter,BufNew *.sh setlocal ft=sh
 autocmd FileType java setlocal omnifunc=javacomplete#Complete
+autocmd BufNewFile,BufRead *.tsx,*.jsx,*.js,*.ts set filetype=typescriptreact
 "autocmd FileType java JCEnable
 
 " uncomment to auto-open nerdtree
 "autocmd VimEnter * :NERDTree
+"
+
+" BEGIN TYPESCRIPT COLORS "
+hi ReactState guifg=#C176A7
+hi ReactProps guifg=#D19A66
+hi ApolloGraphQL guifg=#CB886B
+hi Events ctermfg=204 guifg=#56B6C2
+hi ReduxKeywords ctermfg=204 guifg=#C678DD
+hi ReduxHooksKeywords ctermfg=204 guifg=#C176A7
+hi WebBrowser ctermfg=204 guifg=#56B6C2
+hi ReactLifeCycleMethods ctermfg=204 guifg=#D19A66
+" light-grey
+hi tsxTypeBraces guifg=#999999
+" orange
+hi tsxCloseString guifg=#F99575
+hi tsxCloseTag guifg=#F99575
+hi tsxCloseTagName guifg=#F99575
+hi tsxAttributeBraces guifg=#F99575
+hi tsxEqual guifg=#F99575
+" END TYPESCRIPT COLORS "
 
 map <F2> :NERDTreeToggle<CR>
 map <C-t> :Windows<CR>

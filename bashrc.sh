@@ -260,6 +260,28 @@ function npm() {
     node \
     $@
 }
+function npx() {
+  DOCKER="docker"
+  if [ "$(groups | grep docker)" == "" ]; then
+    DOCKER="sudo docker"
+  fi
+
+  $DOCKER run \
+    -it \
+    --network host \
+    --rm \
+    --entrypoint /usr/local/bin/npx \
+    -w /srv$(pwd) \
+    -v /:/srv \
+    -v /home:/home \
+    -v /etc/group:/etc/group \
+    -v /etc/passwd:/etc/passwd \
+    -v /etc/shadow:/etc/shadow \
+    -u $(id -u):$(id -g) \
+    node \
+    $@
+}
+alias yarn="npx yarn "
 
 function _regit() {
   if [ "$WSL_DISTRO_NAME" == "" ]; then
