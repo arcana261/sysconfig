@@ -57,6 +57,7 @@ alias csv2tsv="tr '\t' ' ' | tr ',' '\t'"
 alias csv2bsv="tr ' ' '-' | tr ',' ' '"
 alias json2tsv="json2csv | csv2tsv"
 alias json2bsv="json2csv | csv2bsv"
+alias pdf2="convert -density 300 -quality 100 "
 
 function dictionary-add() {
   dictionary_word=""

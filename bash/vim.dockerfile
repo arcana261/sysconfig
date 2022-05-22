@@ -78,10 +78,10 @@ RUN \
 RUN \
   apt update && \
   apt install -y \
-    python2 python2-dev && \
-  curl https://bootstrap.pypa.io/get-pip.py --output /tmp/get-pip.py && \
-  python2 /tmp/get-pip.py && \
-  rm -f /tmp/get-pip.py
+    python2 python2-dev
+#  curl https://bootstrap.pypa.io/get-pip.py --output /tmp/get-pip.py && \
+#  python2 /tmp/get-pip.py && \
+#  rm -f /tmp/get-pip.py
 
 RUN \
   pip3 install \
